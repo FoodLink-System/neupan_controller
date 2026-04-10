@@ -51,6 +51,21 @@ public:
 
 private:
   NRMPParams params_;
+
+  /// OSQP-based QP solver (matching Python cvxpylayers/ECOS)
+  NRMPResult solve_osqp(
+    const State & x0,
+    const Eigen::MatrixXd & reference,
+    const std::vector<Eigen::Vector2d> & obstacles,
+    const Eigen::MatrixXd * warm_start);
+
+  /// Gradient descent fallback (when OSQP not available)
+  NRMPResult solve_gradient(
+    const State & x0,
+    const Eigen::MatrixXd & reference,
+    const std::vector<Eigen::Vector2d> & obstacles,
+    const Eigen::MatrixXd * warm_start);
+
   double compute_cost(
     const Eigen::MatrixXd & trajectory,
     const Eigen::MatrixXd & reference,

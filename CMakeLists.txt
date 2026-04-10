@@ -43,6 +43,17 @@ target_include_directories(neupan_core PUBLIC
 target_link_libraries(neupan_core Eigen3::Eigen)
 ament_target_dependencies(neupan_core nav2_costmap_2d rclcpp)
 
+# ── OSQP (QP solver for NRMP optimizer) ──
+find_package(osqp QUIET)
+find_package(OsqpEigen QUIET)
+if(osqp_FOUND AND OsqpEigen_FOUND)
+  target_link_libraries(neupan_core OsqpEigen::OsqpEigen)
+  target_compile_definitions(neupan_core PUBLIC NEUPAN_HAS_OSQP=1)
+  message(STATUS "NeuPAN: OSQP + OsqpEigen found — proper QP solver enabled")
+else()
+  message(STATUS "NeuPAN: OSQP NOT found — using gradient descent fallback")
+endif()
+
 # ── ONNX Runtime (optional — for DUNE neural network) ──
 # First try cmake config (works if CMAKE_PREFIX_PATH includes /opt/onnxruntime)
 find_package(onnxruntime QUIET)

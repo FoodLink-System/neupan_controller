@@ -1,0 +1,43 @@
+# NeuPAN planner config for FL1 diff-drive robot (0.50x0.35m)
+# Used by both Python (neupan_ros2) and C++ (neupan_controller) implementations
+
+receding: 20
+step_time: 0.1
+ref_speed: 0.4
+device: 'cpu'
+time_print: False
+collision_threshold: 0.01
+
+robot:
+  kinematics: 'diff'
+  max_speed: [0.6, 0.8]
+  max_acce: [0.22, 0.6]
+  # FL1 body from URDF robot1.xacro: box 0.54 x 0.355
+  # base_link at wheel axle center, wheels at y=±0.121
+  length: 0.54
+  width: 0.355
+
+ipath:
+  interval: 0.2
+  curve_style: 'line'
+  min_radius: 0.05
+  loop: False
+  arrive_threshold: 0.3
+  close_threshold: 0.05
+  arrive_index_threshold: 3
+
+pan:
+  iter_num: 3
+  dune_max_num: 200
+  nrmp_max_num: 30
+  dune_checkpoint: None
+  iter_threshold: 0.1
+
+adjust:
+  q_s: 1.0
+  p_u: 0.5
+  eta: 10.0
+  d_max: 1.0
+  d_min: 0.25
+  ro_obs: 400
+  bk: 0.1
