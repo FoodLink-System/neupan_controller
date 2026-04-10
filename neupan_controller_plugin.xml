@@ -1,0 +1,7 @@
+<library path="neupan_controller">
+  <class name="neupan_controller::NeuPANController"
+         type="neupan_controller::NeuPANController"
+         base_class_type="nav2_core::Controller">
+    <description>NeuPAN controller — NRMP optimization-based local planner with point-level collision avoidance.</description>
+  </class>
+</library>
