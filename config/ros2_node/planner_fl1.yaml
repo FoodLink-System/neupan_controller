@@ -1,0 +1,53 @@
+# NeuPAN planner config for FL1 robot
+# Based on original neupan_ros2 limo config (proven working)
+# Adapted for FL1 robot geometry
+
+# MPC parameters — match original authors' limo config
+# receding=8, step_time=0.25 gives 2.0s horizon with only 8 decision variables
+# (our previous receding=20, step_time=0.1 had 20 vars — ECOS couldn't converge)
+receding: 8
+step_time: 0.25
+ref_speed: 0.5
+device: 'cpu'
+time_print: False
+collision_threshold: 0.15
+
+# FL1 robot geometry (from robot1.xacro URDF)
+robot:
+  kinematics: 'diff'
+  max_speed: [0.6, 0.8]
+  max_acce: [0.22, 0.6]
+  length: 0.54
+  width: 0.355
+
+# Initial path generation
+ipath:
+  interval: 0.2
+  curve_style: 'line'
+  min_radius: 0.05
+  loop: False
+  arrive_threshold: 0.3
+  close_threshold: 0.05
+  arrive_index_threshold: 3
+
+# PAN (Proximal Alternating Network)
+pan:
+  iter_num: 2
+  dune_max_num: 200
+  nrmp_max_num: 10
+  dune_checkpoint: None
+  iter_threshold: 0.1
+
+# NRMP solver parameters — tuned for FL1 in restaurant corridors
+# d_max reduced from 1.5 to 0.6: corridors have walls at 1-2m,
+# solver must not treat corridor walls as obstacles to back away from.
+# Only avoid things closer than 0.6m (robot width is 0.355m).
+adjust:
+  q_s: 1.0
+  p_u: 0.5
+  eta: 15.0
+  d_max: 0.6
+  d_min: 0.1
+  ro_obs: 400
+  bk: 0.1
+  solver: 'ECOS'

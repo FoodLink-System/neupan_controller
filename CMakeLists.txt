@@ -55,13 +55,10 @@ else()
 endif()
 
 # ── ONNX Runtime (optional — for DUNE neural network) ──
-# First try cmake config (works if CMAKE_PREFIX_PATH includes /opt/onnxruntime)
 find_package(onnxruntime QUIET)
 if(NOT onnxruntime_FOUND)
-  find_library(ONNXRUNTIME_LIB onnxruntime
-    PATHS /opt/onnxruntime/lib /usr/local/lib ENV LD_LIBRARY_PATH)
-  find_path(ONNXRUNTIME_INCLUDE onnxruntime_cxx_api.h
-    PATHS /opt/onnxruntime/include /usr/local/include)
+  find_library(ONNXRUNTIME_LIB onnxruntime PATHS /usr/local/lib)
+  find_path(ONNXRUNTIME_INCLUDE onnxruntime_cxx_api.h PATHS /usr/local/include)
 endif()
 
 # ── Plugin shared library ──

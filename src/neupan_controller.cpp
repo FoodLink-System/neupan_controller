@@ -1,6 +1,7 @@
 // ros2_src/neupan_controller/src/neupan_controller.cpp
 #include "neupan_controller/neupan_controller.hpp"
 #include "neupan_controller/dune_inference.hpp"
+#include "neupan_controller/obstacle_extractor.hpp"
 #include "neupan_controller/trajectory.hpp"
 
 #include <pluginlib/class_list_macros.hpp>
@@ -221,12 +222,15 @@ geometry_msgs::msg::TwistStamped NeuPANController::computeVelocityCommands(
   Eigen::MatrixXd reference = interpolate_reference(
     x0, transformed_plan, params_.horizon, params_.dt, effective_speed);
 
-  // Get raw scan obstacle points (base_link frame) and transform to world
+  // Get obstacles from costmap (reliable) + scan points (if available)
+  auto costmap = costmap_ros_->getCostmap();
+  auto obstacles = ObstacleExtractor::extract(
+    *costmap, x0(0), x0(1), 3.0, 253, 200);
+
+  // Also merge raw scan points if available
   auto scan_points_base = getObstaclePoints();
   double cos_yaw = std::cos(yaw);
   double sin_yaw = std::sin(yaw);
-  std::vector<Eigen::Vector2d> obstacles;
-  obstacles.reserve(scan_points_base.size());
   for (const auto & p : scan_points_base) {
     double wx = cos_yaw * p(0) - sin_yaw * p(1) + x0(0);
     double wy = sin_yaw * p(0) + cos_yaw * p(1) + x0(1);
