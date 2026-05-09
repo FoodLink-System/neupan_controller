@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [main, ros2, master]
+  pull_request:
+    branches: [main, ros2, master]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    container:
+      image: ros:humble-ros-base-jammy
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            libeigen3-dev \
+            python3-colcon-common-extensions \
+            ros-humble-nav2-core \
+            ros-humble-nav2-costmap-2d \
+            ros-humble-nav2-util \
+            ros-humble-pluginlib \
+            ros-humble-tf2-geometry-msgs
+
+      - name: Build
+        shell: bash
+        run: |
+          source /opt/ros/humble/setup.bash
+          mkdir -p /tmp/ws/src
+          cp -r "$GITHUB_WORKSPACE" /tmp/ws/src/neupan_controller
+          cd /tmp/ws
+          colcon build --packages-select neupan_controller --cmake-clean-cache
+
+      - name: Test
+        shell: bash
+        run: |
+          source /opt/ros/humble/setup.bash
+          source /tmp/ws/install/setup.bash
+          cd /tmp/ws
+          colcon test --packages-select neupan_controller --event-handlers console_cohesion+
+          colcon test-result --verbose
