@@ -1,0 +1,46 @@
+# NeuPAN ROS2 node config for FL1 robot in ANEWS simulation
+# Used by Python neupan_ros2 node
+
+neupan_node:
+  ros__parameters:
+    use_sim_time: true
+
+    robot_type: 'fl1'
+    robot_description: 'FoodLink FL1 delivery robot'
+
+    planner_config_file: 'ros2_node/planner_fl1.yaml'
+    dune_checkpoint_file: 'checkpoints/model_5000.pth'
+
+    # TF frames (match ANEWS bridge output)
+    map_frame: 'map'
+    base_frame: 'base_link'
+    lidar_frame: 'laser_link'
+
+    # Visualization
+    enable_visualization: false
+
+    # Laser scan processing
+    scan_angle_max: 3.14
+    scan_angle_min: -3.14
+    scan_downsample: 1
+    scan_range_max: 5.0
+    scan_range_min: 0.01
+
+    # Path planning
+    flip_angle: false
+    refresh_initial_path: true
+    include_initial_path_direction: false
+    control_frequency: 50.0
+
+    # Scan sources — lidar + depth cameras (budget-capped merge)
+    # Primary lidar keeps all points, depth cameras are capped to 30%
+    # of DUNE budget to prevent close-range points from dominating.
+    scan_topic: '/scan'
+    extra_scan_topics:
+      - '/camera/scan:camera_depth_frame'
+      - '/camera_rear/scan:camera_rear_depth_frame'
+
+    # Topic remapping (match ANEWS bridge topics)
+    plan_input_topic: '/plan'
+    goal_topic: '/goal_pose'
+    cmd_vel_topic: '/neupan_cmd_vel'

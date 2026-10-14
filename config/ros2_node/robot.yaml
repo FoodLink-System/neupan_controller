@@ -14,7 +14,7 @@ neupan_node:
     # TF frames — must match ANEWS bridge output
     map_frame: 'map'
     base_frame: 'base_link'
-    lidar_frame: 'base_laser_link'
+    lidar_frame: 'laser_link'
 
     # Laser scan processing
     scan_angle_max: 3.14
